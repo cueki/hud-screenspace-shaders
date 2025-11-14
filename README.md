@@ -35,7 +35,7 @@ CustomShaderOverlay
     "tall"		    "480"
     "scaleimage"	"1"
     "image"			"replay/thumbnails/depthfog_far"
-	}
+}
 ```
 
 ### mat_hdr_level
