@@ -189,22 +189,31 @@ Use [sdk_screenspace_shaders](https://github.com/ficool2/sdk_screenspace_shaders
 ### What Shaders CAN'T Do
 
 **Temporal effects** - No frame history
+
 **SSAO** - No geometry/normal data
+
 **Reflections** - No environment data
 
 ### What Shaders CAN Do
 
 **Color grading** - Sepia, contrast, saturation, tinting
+
 **Blur/sharpen** - Spatial filtering
+
 **Edge detection** - Cel shading, outlines
+
 **Distortion** - Chromatic aberration, lens effects
+
 **Procedural effects** - Rain, grain, noise
+
 **Animated effects** - Using time parameter
+
 **Vignettes** - Darkening edges
 
 ### What Shaders MIGHT be able to do
 
 **Depth stuff** - Like fog, the depth buffer is exposed, have not tested it myself - edit: the depthbuffer sucks
+
 **Velocity stuff** - Wonky motion blur using speed parameters from the hud?
 
 ### Performance Notes
