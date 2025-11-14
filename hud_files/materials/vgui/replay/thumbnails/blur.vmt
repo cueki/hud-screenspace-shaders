@@ -1,0 +1,27 @@
+screenspace_general
+{
+	$pixshader "blur_ps20"
+
+	$basetexture "_rt_FullFrameFB"
+
+	$x360appchooser 1
+	$ignorez        1
+	$fix_fb         32768
+
+	// Blur strength: 1.0 = subtle, 5.0 = need glasses, 10.0 = i cant see
+	$c0_x     3.0
+
+	"<dx90"
+	{
+		$no_draw 1
+	}
+
+	Proxies
+	{
+		Equals
+		{
+			srcVar1			$fix_fb
+			resultVar		$flags2
+		}
+	}
+}

@@ -1,0 +1,36 @@
+screenspace_general
+{
+	$pixshader "depthfog_ps20"
+
+	$basetexture "_rt_FullFrameFB"
+	$texture1    "_rt_FullFrameDepth"
+
+	$x360appchooser 1
+	$ignorez        1
+	$fix_fb         32768
+
+	// Fog start distance (0.0 = starts at camera, 1.0 = starts at far plane)
+	$c0_x     0.3
+
+	// Fog density (higher = thicker fog)
+	$c0_y     2.0
+
+	// Fog color (RGB)
+	$c1_x     0.8  // Red
+	$c1_y     0.0  // Green
+	$c1_z     0.0  // Blue
+
+	"<dx90"
+	{
+		$no_draw 1
+	}
+
+	Proxies
+	{
+		Equals
+		{
+			srcVar1			$fix_fb
+			resultVar		$flags2
+		}
+	}
+}
