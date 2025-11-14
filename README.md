@@ -159,7 +159,7 @@ float isViewmodel = step(0.05, (diff.r + diff.g + diff.b) / 3.0);
 
 Note: This fails when viewmodel color is close to world color
 
-### Creating New Shaders
+## Creating New Shaders
 
 Use [sdk_screenspace_shaders](https://github.com/ficool2/sdk_screenspace_shaders) for shader compilation.
 
@@ -218,6 +218,7 @@ Use [sdk_screenspace_shaders](https://github.com/ficool2/sdk_screenspace_shaders
 
 **All credits go to:**
 - **Shader Compilation:** [sdk_screenspace_shaders](https://github.com/ficool2/sdk_screenspace_shaders)
+
 **Useful:**
 - **HLSL Reference:** [Microsoft HLSL Docs](https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl)
 - **Shader Inspiration:** [ShaderToy](https://www.shadertoy.com/)
