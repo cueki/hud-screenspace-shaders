@@ -23,7 +23,7 @@ For right now, **this is mandatory.** Without it, shaders will show black/white 
 2. VMT files go in `hud/materials/vgui/replay/thumbnails/`
 3. Activate via HUD ImagePanel or console commands (sv_cheats 1 only)
 
-### imagePanel
+### ImagePanel
 
 ```
 ""
@@ -39,13 +39,6 @@ CustomShaderOverlay
     "image"			"replay/thumbnails/depthfog_far"
 }
 ```
-
-### Invisible Viewmodels
-
-**Problem:** When using `_rt_PowerOfTwoFB` or `_rt_FullFrameDepth`, first-person weapons become transparent or invisible.
-
-**Why:** Alpha blending from the shader makes them see-through. Stuff like `$additive 1` might be able to fix this. (needs more testing, maybe [this](https://wiki.facepunch.com/gmod/Shaders/screenspace_general) might help?)
-
 
 ### VMT Template
 
@@ -220,6 +213,12 @@ Use [sdk_screenspace_shaders](https://github.com/ficool2/sdk_screenspace_shaders
 - The instruction limit is low so be careful with loops
 - Keep texture samples low (expensive)
 - Avoid complex math (sqrt, pow, trig)
+
+### Viewmodel Notes
+
+**Problem:** When using `_rt_PowerOfTwoFB` or `_rt_FullFrameDepth`, first-person weapons become transparent or invisible.
+
+**Why:** Alpha blending from the shader makes them see-through. Stuff like `$additive 1` might be able to fix this. (needs more testing, maybe [this](https://wiki.facepunch.com/gmod/Shaders/screenspace_general) might help?)
 
 ## Resources
 
