@@ -15,6 +15,8 @@ mat_hdr_level 1
 
 For right now, **this is mandatory.** Without it, shaders will show black/white screens.
 
+`_rt_FullFrameFB` (the full framebuffer) only works properly when the post-processing pipeline runs. `mat_hdr_level 1` forces this.
+
 ### Installation
 
 1. Shader files go into folder to `hud/shaders/fcx/`
@@ -38,12 +40,7 @@ CustomShaderOverlay
 }
 ```
 
-### mat_hdr_level
-
-`_rt_FullFrameFB` (the full framebuffer) only works properly when the post-processing pipeline runs. `mat_hdr_level 1` forces this.
-
-
-### Invisible Viewmodel
+### Invisible Viewmodels
 
 **Problem:** When using `_rt_PowerOfTwoFB` or `_rt_FullFrameDepth`, first-person weapons become transparent or invisible.
 
