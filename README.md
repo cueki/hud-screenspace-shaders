@@ -2,7 +2,7 @@
 
 A collection of ready-to-use screenspace shaders for TF2 that can be activated via HUD elements.
 
-<details>
+<details open>
 <summary><h2>Example Screenshots</h2></summary>
 
 ### Blur Shader
@@ -22,6 +22,7 @@ A collection of ready-to-use screenspace shaders for TF2 that can be activated v
   <img src="images/depthfog_shader1.png" width="45%" style="display: inline-block;">
   <img src="images/depthfog_shader2.png" width="45%" style="display: inline-block;">
 </div>
+Notice the weird overlap ^ we will get back to that...
 
 ### Rain Shader
 <div style="overflow-x: auto; white-space: nowrap;">
@@ -36,8 +37,6 @@ A collection of ready-to-use screenspace shaders for TF2 that can be activated v
 </div>
 
 </details>
-
-**Compilation:** See [sdk_screenspace_shaders](https://github.com/ficool2/sdk_screenspace_shaders) for how to compile HLSL shaders. 
 
 ### Required Game Setting
 
