@@ -3,7 +3,7 @@
 A collection of ready-to-use screenspace shaders for TF2 that can be activated via HUD elements.
 
 <details>
-<summary>Example Screenshots</summary>
+<summary><h2>Example Screenshots</h2></summary>
 
 ### Blur Shader
 <div style="overflow-x: auto; white-space: nowrap;">
