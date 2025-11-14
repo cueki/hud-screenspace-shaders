@@ -77,18 +77,7 @@ Minimal working VMT for custom shaders:
     $c0_y     0.0
     $c0_z     0.0
     $c0_w     0.0
-    $c1_x     0.0
-    $c1_y     0.0
-    $c1_z     0.0
-    $c1_w     0.0
-    $c2_x     0.0
-    $c2_y     0.0
-    $c2_z     0.0
-    $c2_w     0.0
-    $c3_x     0.0
-    $c3_y     0.0
-    $c3_z     0.0
-    $c3_w     0.0
+    // ...this block repeats 3 more times with the number after $c incrementing by 1
 
     "<dx90"
     {
@@ -124,7 +113,7 @@ Proxies
 }
 ```
 
-#### How to Access Depth
+### How to Access Depth
 
 You probably don't want to be doing this...
 
