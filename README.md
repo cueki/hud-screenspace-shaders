@@ -2,6 +2,41 @@
 
 A collection of ready-to-use screenspace shaders for TF2 that can be activated via HUD elements.
 
+<details>
+<summary>Example Screenshots</summary>
+
+### Blur Shader
+<div style="overflow-x: auto; white-space: nowrap;">
+  <img src="images/blur_shader1.png" width="45%" style="display: inline-block;">
+  <img src="images/blur_shader2.png" width="45%" style="display: inline-block;">
+</div>
+
+### Cel Shader
+<div style="overflow-x: auto; white-space: nowrap;">
+  <img src="images/cel_shader1.png" width="45%" style="display: inline-block;">
+  <img src="images/cel_shader2.png" width="45%" style="display: inline-block;">
+</div>
+
+### Depth Fog Shader
+<div style="overflow-x: auto; white-space: nowrap;">
+  <img src="images/depthfog_shader1.png" width="45%" style="display: inline-block;">
+  <img src="images/depthfog_shader2.png" width="45%" style="display: inline-block;">
+</div>
+
+### Rain Shader
+<div style="overflow-x: auto; white-space: nowrap;">
+  <img src="images/rain_shader1.png" width="45%" style="display: inline-block;">
+  <img src="images/rain_shader2.png" width="45%" style="display: inline-block;">
+</div>
+
+### Sepia Shader
+<div style="overflow-x: auto; white-space: nowrap;">
+  <img src="images/sepia_filter1.png" width="45%" style="display: inline-block;">
+  <img src="images/sepia_shader2.png" width="45%" style="display: inline-block;">
+</div>
+
+</details>
+
 **Compilation:** See [sdk_screenspace_shaders](https://github.com/ficool2/sdk_screenspace_shaders) for how to compile HLSL shaders. 
 
 ### Required Game Setting
