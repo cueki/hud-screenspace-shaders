@@ -2,7 +2,9 @@
 
 A collection of ready-to-use screenspace shaders for TF2 that can be activated via HUD elements.
 
-**Compilation:** See [sdk_screenspace_shaders](https://github.com/ficool2/sdk_screenspace_shaders) for how to compile HLSL shaders. This repo contain some extra compiled shaders (as well as their source code), VMTs, and some more TF2 hud specific instructions.
+**Compilation:** See [sdk_screenspace_shaders](https://github.com/ficool2/sdk_screenspace_shaders) for how to compile HLSL shaders. 
+
+This repo contain some extra compiled shaders (as well as their source code), VMTs, and some more TF2 hud specific instructions.
 
 ### Required Game Setting
 
