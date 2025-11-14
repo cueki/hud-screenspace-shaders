@@ -137,11 +137,9 @@ $texture1    "_rt_FullFrameDepth"
 
 #### Depth Buffer Limitations
 
-**1. Depth is in alpha channel**
-
-**2. God awful range (192 units)**
-
-**3. Viewmodels don't write to depth**
+1. Depth is in alpha channel
+2. God awful range (192 units)
+3. Viewmodels don't write to depth
 
 **Problem:** Depth-based effects fog/blur viewmodels because depth reads the world behind them.
 
