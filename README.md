@@ -154,8 +154,6 @@ $texture1    "_rt_FullFrameDepth"
 
 **3. Viewmodels don't write to depth**
 
-#### Viewmodel Issues
-
 **Problem:** Depth-based effects fog/blur viewmodels because depth reads the world behind them.
 
 **Hacky solution:** Color difference masking
