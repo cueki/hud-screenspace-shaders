@@ -24,7 +24,6 @@ For right now, **this is mandatory.** Without it, shaders will show black/white 
 ### ImagePanel
 
 ```
-""
 CustomShaderOverlay
 {
     "ControlName"	"ImagePanel"
