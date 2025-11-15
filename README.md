@@ -79,8 +79,6 @@ CustomShaderOverlay
 
 ### VMT Template
 
-Minimal working VMT for custom shaders:
-
 ```
 "screenspace_general"
 {
