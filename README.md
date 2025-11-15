@@ -32,8 +32,14 @@ Notice the weird overlap ^ we will get back to that...
 
 ### Sepia Shader
 <div style="overflow-x: auto; white-space: nowrap;">
-  <img src="images/sepia_filter1.png" width="45%" style="display: inline-block;">
+  <img src="images/sepia_shader1.png" width="45%" style="display: inline-block;">
   <img src="images/sepia_shader2.png" width="45%" style="display: inline-block;">
+</div>
+
+### Paint Shader (WIP)
+<div style="overflow-x: auto; white-space: nowrap;">
+  <img src="images/paint_shader1.png" width="45%" style="display: inline-block;">
+  <img src="images/paint_shader2.png" width="45%" style="display: inline-block;">
 </div>
 
 </details>

@@ -2,12 +2,14 @@
 
 #include "common.hlsl"
 
-// Edge thickness
+// Edge thickness (Note: squared internally for optimization)
 #define edgeThreshold Constants0.x
 // Color bands
 #define colorBands Constants0.y
 // Edge color darkness
 #define edgeDarkness Constants0.z
+
+static const float3 LUM_WEIGHTS = float3(0.299, 0.587, 0.114);
 
 float4 main( PS_INPUT i ) : COLOR
 {
@@ -27,24 +29,23 @@ float4 main( PS_INPUT i ) : COLOR
     float3 br = tex2D(TexBase, i.uv + float2( 1,  1) * pixelSize).rgb;
 
     // Convert to luminance
-    float lum_tl = dot(tl, float3(0.299, 0.587, 0.114));
-    float lum_t  = dot(t,  float3(0.299, 0.587, 0.114));
-    float lum_tr = dot(tr, float3(0.299, 0.587, 0.114));
-    float lum_l  = dot(l,  float3(0.299, 0.587, 0.114));
-    float lum_r  = dot(r,  float3(0.299, 0.587, 0.114));
-    float lum_bl = dot(bl, float3(0.299, 0.587, 0.114));
-    float lum_b  = dot(b,  float3(0.299, 0.587, 0.114));
-    float lum_br = dot(br, float3(0.299, 0.587, 0.114));
+    float lum_tl = dot(tl, LUM_WEIGHTS);
+    float lum_t  = dot(t,  LUM_WEIGHTS);
+    float lum_tr = dot(tr, LUM_WEIGHTS);
+    float lum_l  = dot(l,  LUM_WEIGHTS);
+    float lum_r  = dot(r,  LUM_WEIGHTS);
+    float lum_bl = dot(bl, LUM_WEIGHTS);
+    float lum_b  = dot(b,  LUM_WEIGHTS);
+    float lum_br = dot(br, LUM_WEIGHTS);
 
-    // Horizontal gradient
+    // Sobel edge detection
     float gx = -lum_tl - 2.0*lum_l - lum_bl + lum_tr + 2.0*lum_r + lum_br;
-    // Vertical gradient
     float gy = -lum_tl - 2.0*lum_t - lum_tr + lum_bl + 2.0*lum_b + lum_br;
-    // Gradient magnitude
-    float edge = sqrt(gx * gx + gy * gy);
 
-    // Edging threshold
-    float isEdge = step(edgeThreshold, edge);
+    // Compare squared values
+    float edgeSq = gx * gx + gy * gy;
+    float thresholdSq = edgeThreshold * edgeThreshold;
+    float isEdge = step(thresholdSq, edgeSq);
 
     // Reduce colors to discrete bands
     float3 quantized = floor(center * colorBands) / colorBands;
