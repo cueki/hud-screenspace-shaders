@@ -76,6 +76,15 @@ CustomShaderOverlay
     "image"			"replay/thumbnails/depthfog_far"
 }
 ```
+## Creating New Shaders
+
+Use [sdk_screenspace_shaders](https://github.com/ficool2/sdk_screenspace_shaders) for shader compilation.
+
+**Basic process:**
+1. Write `.hlsl` shader
+2. Compile to `.vcs`
+3. Create `.vmt` material file
+4. Reference in HUD
 
 ### VMT Template
 
@@ -194,16 +203,6 @@ float isViewmodel = step(0.05, (diff.r + diff.g + diff.b) / 3.0);
 
 Note: This fails when viewmodel color is close to world color
 
-## Creating New Shaders
-
-Use [sdk_screenspace_shaders](https://github.com/ficool2/sdk_screenspace_shaders) for shader compilation.
-
-**Basic process:**
-1. Write `.hlsl` shader
-2. Compile to `.vcs`
-3. Create `.vmt` material file
-4. Reference in HUD
-
 ## Limitations
 
 ### What Shaders CAN'T Do
@@ -241,7 +240,6 @@ Use [sdk_screenspace_shaders](https://github.com/ficool2/sdk_screenspace_shaders
 - Pixel shaders run **every frame, every pixel**
 - The instruction limit is low so be careful with loops
 - Keep texture samples low (expensive)
-- Avoid complex math (sqrt, pow, trig)
 
 ### Viewmodel Notes
 
