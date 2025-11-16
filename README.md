@@ -17,13 +17,6 @@ A collection of ready-to-use screenspace shaders for TF2 that can be activated v
   <img src="images/cel_shader2.png" width="45%" style="display: inline-block;">
 </div>
 
-### Depth Fog Shader
-<div style="overflow-x: auto; white-space: nowrap;">
-  <img src="images/depthfog_shader1.png" width="45%" style="display: inline-block;">
-  <img src="images/depthfog_shader2.png" width="45%" style="display: inline-block;">
-</div>
-Notice the weird overlap ^ we will get back to that...
-
 ### Rain Shader
 <div style="overflow-x: auto; white-space: nowrap;">
   <img src="images/rain_shader1.png" width="45%" style="display: inline-block;">
