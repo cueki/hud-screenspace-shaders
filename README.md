@@ -51,13 +51,17 @@ Add to your `autoexec`:
 mat_hdr_level 1
 ```
 
-For right now, **this is mandatory.** Without it, shaders will show black/white screens.
+**This is mandatory for `_rt_FullFrameFB`.** Without it, shaders will show black/white screens.
 
-`_rt_FullFrameFB` (the full framebuffer) only works properly when the post-processing pipeline runs. `mat_hdr_level 1` forces this.
+`mat_hdr_level 1` enables the post-processing pipeline (bloom). `_rt_FullFrameFB` is only populated by `UpdateScreenEffectTexture()`, which only runs during post-processing. When `mat_hdr_level 0`, the function never runs and the framebuffer stays empty.
+
+In simpler terms, we are hijacking the bloom post-process with our own shader.
+
+Note: `_rt_PowerOfTwoFB` doesn't require this, it's populated on-demand via `CopyRenderTargetToTexture()` when materials request it.
 
 ### Installation
 
-1. Shader files go into folder to `hud/shaders/fcx/`
+1. Shader files go into folder to `hud/shaders/fxc/`
 2. VMT files go in `hud/materials/vgui/replay/thumbnails/`
 3. Activate via HUD ImagePanel or console commands (sv_cheats 1 only)
 
@@ -99,22 +103,13 @@ Use [sdk_screenspace_shaders](https://github.com/ficool2/sdk_screenspace_shaders
     // $texture1    ""
     // $texture2    ""
     // $texture3    ""
-    
-    // Extra texture settings
-    // $linearread_basetexture    0
-    // $linearread_texture1       0
-    // $linearread_texture2       0
-    // $linearread_texture3       0
 
     $x360appchooser 1     // Required for vertex transformations
-    $fix_fb         32768 // For proxy
     
-    // from testing I saw no difference with these on or off (more testing needed)
-    $copyalpha                 1     // Required?
-    $ignorez                   1     // Required?
-    $alpha_blend_color_overlay 0
-    $alpha_blend               0
-    $linearwrite               0
+    // $copyalpha is only needed if you wish to pass the alpha through to the shader
+    // I would just keep it enabled always...
+    $copyalpha                 1
+    $ignorez                   1
     
     // 16 customizable parameters that are passed to the shader
     $c0_x     0.0
@@ -126,19 +121,6 @@ Use [sdk_screenspace_shaders](https://github.com/ficool2/sdk_screenspace_shaders
     "<dx90"
     {
         $no_draw 1
-    }
-
-    Proxies
-    {
-        Equals
-        {
-            // Updates the framebuffer
-            // You only need this if you are going to be *reading* the framebuffer
-            // If you aren't using the framebuffer, or are only fetching its dimensions,
-            // you DON'T need this and it will save you some performance
-            srcVar1     $fix_fb
-            resultVar   $flags2
-        }
     }
 }
 ```
@@ -157,51 +139,91 @@ Proxies
 }
 ```
 
-### How to Access Depth
+### Using Depth for Masking
 
-You probably don't want to be doing this...
+The alpha channel of `_rt_FullFrameFB` contains depth information. You can use this to exclude nearby objects (viewmodel, floor) from shader effects.
+
+**Approach 1: VMT-level (smooth blend)**
+
+Set `$copyalpha 0` in your VMT. The material system will use alpha for depth-based blending, automatically excluding viewmodels and creating a distance-based falloff.
+
+```
+$copyalpha 0  // Smooth depth-based exclusion
+```
+
+**Approach 2: Shader-level (manual threshold)**
+
+Implement depth masking in your shader code with `$copyalpha 1`:
 
 ```hlsl
-sampler Texture1 : register(s1);  // _rt_FullFrameDepth
+float4 baseColor = tex2D(TexBase, i.uv);
 
-float4 main( PS_INPUT i ) : COLOR
+// Skip nearby objects (alpha < threshold)
+if (baseColor.a < depthThreshold)
 {
-    float3 color = tex2D(TexBase, i.uv).rgb;
-    float depth = tex2D(Texture1, i.uv).a;
-
-    // Use depth here...
+    return baseColor; // Don't apply effect to nearby objects
 }
+
+// Apply effect to distant objects only
+float4 processed = applyEffect(...);
+return float4(processed.rgb, baseColor.a);
 ```
 
-**VMT:**
+VMT parameter for threshold control:
 ```
-$basetexture "_rt_FullFrameFB"
-$texture1    "_rt_FullFrameDepth"
-```
-
-#### Depth Buffer Limitations
-
-1. Depth is in alpha channel
-2. God awful range (192 units)
-3. Viewmodels don't write to depth
-
-**Problem:** Depth-based effects fog/blur viewmodels because depth reads the world behind them.
-
-**Hacky solution:** Color difference masking
-
-```hlsl
-sampler Texture1 : register(s1);  // _rt_PowerOfTwoFB
-sampler Texture2 : register(s2);  // _rt_FullFrameDepth
-
-float3 fullFrame = tex2D(TexBase, i.uv).rgb;
-float3 worldOnly = tex2D(Texture1, i.uv).rgb;
-
-// Detect viewmodels by comparing
-float3 diff = abs(fullFrame - worldOnly);
-float isViewmodel = step(0.05, (diff.r + diff.g + diff.b) / 3.0);
+$copyalpha 1
+$c0_y     0.3  // Depth threshold (0.0-1.0)
 ```
 
-Note: This fails when viewmodel color is close to world color
+This creates a hard cutoff at the threshold value.
+
+## Development Notes
+
+### Framebuffers
+
+`_rt_FullFrameFB` - Native screen resolution. Includes viewmodels. **Alpha channel contains depth information** (low alpha = near, high alpha = far).
+
+`_rt_PowerOfTwoFB` - Allocated as 1024x1024 texture. Lower quality compared to FullFrameFB. Viewmodels not included. Also has depth in alpha channel.
+
+`_rt_FullFrameDepth` - Just an alias for `_rt_PowerOfTwoFB`.
+
+### Color Behavior
+
+There is an unavoidable tonemap applied due to `mat_hdr_level 1` that compresses color multipliers:
+- 2.0x multiplier → ~1.3x actual brightness
+- 4.0x multiplier → ~1.7x actual brightness
+
+Effects requiring precise color math will be affected by this compression.
+
+### VMT Parameters
+
+**Required:**
+- `$pixshader "name_ps20"` - Shader to use
+- `$basetexture "_rt_FullFrameFB"` - Texture input
+- `$x360appchooser 1` - Required for shader to display
+
+**Alpha handling:**
+- `$copyalpha 1` - Preserves framebuffer alpha (depth). Shader effect applies to everything including viewmodels and nearby objects.
+- `$copyalpha 0` - Material system uses alpha for depth-based blending. Shader does not apply to viewmodels and nearby objects.
+
+<div style="overflow-x: auto; white-space: nowrap;">
+  <img src="images/copyalpha1.png" width="45%" style="display: inline-block;">
+  <img src="images/copyalpha0.png" width="45%" style="display: inline-block;">
+</div>
+
+**Parameters:**
+- `$c0_x` through `$c3_w` - 16 customizable shader parameters (4 float4 constants)
+
+**Color space (for framebuffer processing):**
+
+Reading from `_rt_FullFrameFB` (gamma-corrected):
+- `$linearread_basetexture 1` - Reads texture as linear instead of sRGB. Causes washed out appearance.
+- `$linearwrite 1` - Writes output as linear instead of sRGB. Causes darkening.
+
+Linear color flags are intended for UI shaders that use custom textures or constant colors (non-framebuffer content) to prevent double gamma correction. For shaders processing `_rt_FullFrameFB`, I think its safe to omit these flags.
+
+**Other:**
+- `$ignorez 1` - Appears to have no effect for what we are doing.
 
 ## Limitations
 
@@ -240,12 +262,6 @@ Note: This fails when viewmodel color is close to world color
 - Pixel shaders run **every frame, every pixel**
 - The instruction limit is low so be careful with loops
 - Keep texture samples low (expensive)
-
-### Viewmodel Notes
-
-**Problem:** When using `_rt_PowerOfTwoFB` or `_rt_FullFrameDepth`, first-person weapons become transparent or invisible.
-
-**Why:** Alpha blending from the shader makes them see-through. Stuff like `$additive 1` might be able to fix this. (needs more testing, maybe [this](https://wiki.facepunch.com/gmod/Shaders/screenspace_general) might help?)
 
 ## Resources
 

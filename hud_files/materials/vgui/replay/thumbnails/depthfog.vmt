@@ -1,13 +1,12 @@
 screenspace_general
 {
 	$pixshader "depthfog_ps20"
-
 	$basetexture "_rt_FullFrameFB"
 	$texture1    "_rt_FullFrameDepth"
 
 	$x360appchooser 1
-	$ignorez        1
-	$fix_fb         32768
+	$copyalpha 1
+	$ignorez 1
 
 	// Fog start distance (0.0 = starts at camera, 1.0 = starts at far plane)
 	$c0_x     0.3
@@ -23,14 +22,5 @@ screenspace_general
 	"<dx90"
 	{
 		$no_draw 1
-	}
-
-	Proxies
-	{
-		Equals
-		{
-			srcVar1			$fix_fb
-			resultVar		$flags2
-		}
 	}
 }

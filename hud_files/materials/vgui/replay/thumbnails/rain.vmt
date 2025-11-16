@@ -1,31 +1,16 @@
-"screenspace_general"
+screenspace_general
 {
 	$pixshader "rain_ps20"
-
 	$basetexture "_rt_FullFrameFB"
-	// $texture1    ""
-	// $texture2    ""
-	// $texture3    ""
 
-	$copyalpha                 1
-	// $alpha_blend_color_overlay 1
-	// $alpha_blend               1
-	// $linearwrite               1
-	// $linearread_basetexture    0
-	// $linearread_texture1       0
-	// $linearread_texture2       0
-	// $linearread_texture3       0
+	$x360appchooser 1
+	$copyalpha 1
+	$ignorez 1
 
 	$c0_x     0.0 // time
 	$c0_y     0.6 // rain intensity
 	$c0_z     1.0 // rain speed
 	$c0_w     1.5 // rain size
-
-	// $additive 1
-	$x360appchooser 1
-	$ignorez        1
-	// $fix_vm         16384
-	$fix_fb         32768
 
 	"<dx90"
 	{
@@ -34,11 +19,6 @@
 
 	Proxies
 	{
-		Equals
-		{
-			srcVar1			$fix_fb
-			resultVar		$flags2
-		}
 		CurrentTime
 		{
 			resultVar		$c0_x

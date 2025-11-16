@@ -16,7 +16,8 @@ float4 main( PS_INPUT i ) : COLOR
     float2 pixelSize = TexBaseSize.xy;
 
     // Sample the center pixel
-    float3 center = tex2D(TexBase, i.uv).rgb;
+    float4 centerSample = tex2D(TexBase, i.uv);
+    float3 center = centerSample.rgb;
 
     // Sample 8 surrounding pixels
     float3 tl = tex2D(TexBase, i.uv + float2(-1, -1) * pixelSize).rgb;
@@ -53,5 +54,5 @@ float4 main( PS_INPUT i ) : COLOR
     // Darken edges
     float3 finalColor = quantized * lerp(1.0, edgeDarkness, isEdge);
 
-    return float4(finalColor, 1.0);
+    return float4(finalColor, centerSample.a);
 }

@@ -13,10 +13,10 @@ sampler Texture1 : register(s1);  // _rt_FullFrameDepth
 
 float4 main( PS_INPUT i ) : COLOR
 {
-    float3 color = tex2D(TexBase, i.uv).rgb;
+    float4 baseColor = tex2D(TexBase, i.uv);
     float depth = tex2D(Texture1, i.uv).a;
     float fogAmount = saturate((depth - fogStart) * fogDensity);
-    float3 fogged = lerp(color, fogColor, fogAmount);
+    float3 fogged = lerp(baseColor.rgb, fogColor, fogAmount);
 
-    return float4(fogged, 1.0);
+    return float4(fogged, baseColor.a);
 }

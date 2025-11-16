@@ -1,12 +1,11 @@
 screenspace_general
 {
 	$pixshader "oilpaint_ps20"
-
 	$basetexture "_rt_FullFrameFB"
 
 	$x360appchooser 1
-	$ignorez        1
-	$fix_fb         32768
+	$copyalpha 1
+	$ignorez 1
 
 	// Brush size: 1.0 = small strokes, 3.0 = medium, 5.0+ = large paint strokes
 	$c0_x     3.3
@@ -23,14 +22,5 @@ screenspace_general
 	"<dx90"
 	{
 		$no_draw 1
-	}
-
-	Proxies
-	{
-		Equals
-		{
-			srcVar1			$fix_fb
-			resultVar		$flags2
-		}
 	}
 }

@@ -1,15 +1,11 @@
 screenspace_general
 {
 	$pixshader "celshade_ps20"
-
 	$basetexture "_rt_FullFrameFB"
-	$x360appchooser 1
-	$ignorez        1
-	$fix_fb         32768
 
-	$copyalpha      1
-	$linearread_basetexture    0
-	$linearwrite               0
+	$x360appchooser 1
+	$copyalpha 1
+	$ignorez 1
 
 	// Edge detection threshold: 0.1 = thick lines, 0.3 = thin lines
 	$c0_x     0.15
@@ -21,14 +17,5 @@ screenspace_general
 	"<dx90"
 	{
 		$no_draw 1
-	}
-
-	Proxies
-	{
-		Equals
-		{
-			srcVar1			$fix_fb
-			resultVar		$flags2
-		}
 	}
 }

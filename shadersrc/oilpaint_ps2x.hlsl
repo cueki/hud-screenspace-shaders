@@ -21,7 +21,8 @@ float4 main( PS_INPUT i ) : COLOR
     float3 t  = tex2D(TexBase, i.uv + float2( 0, -1) * pixelSize).rgb;
     float3 tr = tex2D(TexBase, i.uv + float2( 1, -1) * pixelSize).rgb;
     float3 l  = tex2D(TexBase, i.uv + float2(-1,  0) * pixelSize).rgb;
-    float3 c  = tex2D(TexBase, i.uv + float2( 0,  0) * pixelSize).rgb;
+    float4 centerSample = tex2D(TexBase, i.uv + float2( 0,  0) * pixelSize);
+    float3 c  = centerSample.rgb;
     float3 r  = tex2D(TexBase, i.uv + float2( 1,  0) * pixelSize).rgb;
     float3 bl = tex2D(TexBase, i.uv + float2(-1,  1) * pixelSize).rgb;
     float3 b  = tex2D(TexBase, i.uv + float2( 0,  1) * pixelSize).rgb;
@@ -105,5 +106,5 @@ float4 main( PS_INPUT i ) : COLOR
         finalColor = finalColor * finalColor * (3.0 - 2.0 * finalColor);
     }
 
-    return float4(finalColor, 1.0);
+    return float4(finalColor, centerSample.a);
 }
