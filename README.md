@@ -55,7 +55,7 @@ Note: `_rt_PowerOfTwoFB` doesn't require this, it's populated on-demand via `Cop
 ### Important Note! (Please Read)
 Custom maps may have no post processing (jump maps, mge, etc). These maps therefore have an empty `_rt_FullFrameFB`, even with `mat_hdr_level 1`. There are 4 possible solutions to this:
 
-1. Change `_rt_FullFrameFB` and to `_rt_FullFrameFB1` and set `mat_viewportscale 0.9999999`. This removes the reliance on any framebuffer being copied or not. Unfortunately, your game will render at 1 pixel less height/width than normal. This works on all maps/settings/does not rely on `mat_hdr_level` or anything else. 
+1. Change `_rt_FullFrameFB` to `_rt_FullFrameFB1` and set `mat_viewportscale 0.9999999`. This removes the reliance on any framebuffer being copied or not. Unfortunately, your game will render at 1 pixel less height/width than normal. This works on all maps/settings/does not rely on `mat_hdr_level` or anything else. 
 2. Enable motion blur with `mat_motion_blur_enabled 1` and disable it visually with `mat_motion_blur_strength 0`. This ensures the `_rt_FullFrameFB` framebuffer exists, however, it is created without the viewmodel, so the viewmodel might not exist/be transparent with the alpha.
 3. Use `_rt_PowerOfTwoFB`. This framebuffer is used for depth calculations earlier in the pipeline, it always exists. Unfortunately it is a 1024x1024 image and therefore the mapping of pixels is not as clear as the full resolution framebuffer. It also does not contain the viewmodel. On the plus side you can use it without `mat_hdr_level 1`, so if you are doing hud overlays instead of fullscreen shaders it might be a better option.
 4. Disable the ImagePanel with `"visible" "0"` and `"enabled" "0"`, then refresh the hud with `hud_reloadscheme`.
