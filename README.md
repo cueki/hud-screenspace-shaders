@@ -5,34 +5,40 @@ A collection of ready-to-use screenspace shaders for TF2 that can be activated v
 <details open>
 <summary><h2>Example Screenshots</h2></summary>
 
-### Blur Shader
+### Blur
 <div style="overflow-x: auto; white-space: nowrap;">
   <img src="images/blur_shader1.png" width="45%" style="display: inline-block;">
   <img src="images/blur_shader2.png" width="45%" style="display: inline-block;">
 </div>
 
-### Cel Shader
+### Cel
 <div style="overflow-x: auto; white-space: nowrap;">
   <img src="images/cel_shader1.png" width="45%" style="display: inline-block;">
   <img src="images/cel_shader2.png" width="45%" style="display: inline-block;">
 </div>
 
-### Rain Shader
+### Rain
 <div style="overflow-x: auto; white-space: nowrap;">
   <img src="images/rain_shader1.png" width="45%" style="display: inline-block;">
   <img src="images/rain_shader2.png" width="45%" style="display: inline-block;">
 </div>
 
-### Sepia Shader
+### Sepia
 <div style="overflow-x: auto; white-space: nowrap;">
   <img src="images/sepia_shader1.png" width="45%" style="display: inline-block;">
   <img src="images/sepia_shader2.png" width="45%" style="display: inline-block;">
 </div>
 
-### Paint Shader (WIP)
+### Paint
 <div style="overflow-x: auto; white-space: nowrap;">
   <img src="images/paint_shader1.png" width="45%" style="display: inline-block;">
   <img src="images/paint_shader2.png" width="45%" style="display: inline-block;">
+</div>
+
+### PSX
+<div style="overflow-x: auto; white-space: nowrap;">
+  <img src="images/psx_shader1.png" width="45%" style="display: inline-block;">
+  <img src="images/psx_shader2.png" width="45%" style="display: inline-block;">
 </div>
 
 </details>
@@ -41,24 +47,29 @@ A collection of ready-to-use screenspace shaders for TF2 that can be activated v
 
 Add to your `autoexec`:
 ```
-mat_hdr_level 1
+`mat_viewportscale 0.9999999`
 ```
 
-**This is mandatory for `_rt_FullFrameFB`.** Without it, shaders will show black/white screens.
+**This is mandatory for `_rt_FullFrameFB1`.** Without it, shaders will show black/white screens.
 
-`mat_hdr_level 1` enables the post-processing pipeline (bloom). `_rt_FullFrameFB` is only populated by `UpdateScreenEffectTexture()`, which only runs during post-processing. When `mat_hdr_level 0`, the function never runs and the framebuffer stays empty.
+`mat_viewportscale 0.9999999` enables upscaling post-processing pipeline. `_rt_FullFrameFB1` is only populated by `CopyRenderTargetToTextureEx()`, which only runs if `mat_viewportscale` < 1. If `mat_viewportscale 1`, then the function never runs and the framebuffer never gets copied.
 
-In simpler terms, we are hijacking the bloom post-process with our own shader.
+In simpler terms, we are hijacking the upscale post-process with our own shader.
 
 Note: `_rt_PowerOfTwoFB` doesn't require this, it's populated on-demand via `CopyRenderTargetToTexture()` when materials request it.
 
 ### Important Note! (Please Read)
-Custom maps may have no post processing (jump maps, mge, etc). These maps therefore have an empty `_rt_FullFrameFB`, even with `mat_hdr_level 1`. There are 4 possible solutions to this:
+There are a couple of different framebuffers we can access, depending on settings. Here are some things to consider.
 
-1. Change `_rt_FullFrameFB` to `_rt_FullFrameFB1` and set `mat_viewportscale 0.9999999`. This removes the reliance on any framebuffer being copied or not. Unfortunately, your game will render at 1 pixel less height/width than normal. This works on all maps/settings/does not rely on `mat_hdr_level` or anything else. 
-2. Enable motion blur with `mat_motion_blur_enabled 1` and disable it visually with `mat_motion_blur_strength 0`. This ensures the `_rt_FullFrameFB` framebuffer exists, however, it is created without the viewmodel, so the viewmodel might not exist/be transparent with the alpha.
-3. Use `_rt_PowerOfTwoFB`. This framebuffer is used for depth calculations earlier in the pipeline, it always exists. Unfortunately it is a 1024x1024 image and therefore the mapping of pixels is not as clear as the full resolution framebuffer. It also does not contain the viewmodel. On the plus side you can use it without `mat_hdr_level 1`, so if you are doing hud overlays instead of fullscreen shaders it might be a better option.
-4. Disable the ImagePanel with `"visible" "0"` and `"enabled" "0"`, then refresh the hud with `hud_reloadscheme`.
+**For `_rt_FullFrameFB`:**
+- Change `_rt_FullFrameFB1` to `_rt_FullFrameFB` and set `mat_hdr_level 1` instead of `mat_viewportscale 1`. Unfortunately, this does not work on all maps, and adds its own post processing that might interfere with the desired effect. 
+- Or enable motion blur with `mat_motion_blur_enabled 1` and disable it visually with `mat_motion_blur_strength 0`. This ensures the `_rt_FullFrameFB` framebuffer exists, however, it is created without the viewmodel, so the viewmodel might not exist/be transparent with the alpha.
+
+**For `_rt_PowerOfTwoFB`**
+- Use `_rt_PowerOfTwoFB` instead of `_rt_FullFrameFB`. This framebuffer is used for depth calculations earlier in the pipeline, it always exists. Unfortunately it is a 1024x1024 image and therefore the mapping of pixels is not as clear as the full resolution framebuffer. It also does not contain the viewmodel. On the plus side you can use it without `mat_hdr_level 1` or `mat_viewportscale`, so if you are doing hud overlays instead of fullscreen shaders it might be a better option.
+
+**Disable the shader:**
+- Disable the ImagePanel with `"visible" "0"` and `"enabled" "0"`, then refresh the hud with `hud_reloadscheme`.
 
 ### Installation
 
@@ -67,6 +78,7 @@ Custom maps may have no post processing (jump maps, mge, etc). These maps theref
 3. Activate via HUD ImagePanel or console commands (sv_cheats 1 only)
 
 ### ImagePanel
+*Inside of scripts/hudlayout.res*
 
 ```
 CustomShaderOverlay
@@ -142,14 +154,14 @@ Proxies
 
 ### Using Depth for Masking
 
-The alpha channel of `_rt_FullFrameFB` contains depth information. You can use this to exclude nearby objects (viewmodel, floor) from shader effects.
+The alpha channel of any `_rt_FullFrameFB` contains depth information. You can use this to exclude nearby objects (viewmodel, floor) from shader effects.
 
-**Approach 1: VMT-level (smooth blend)**
+**Approach 1: VMT-level**
 
 Set `$copyalpha 0` in your VMT. The material system will use alpha for depth-based blending, automatically excluding viewmodels and creating a distance-based falloff.
 
 ```
-$copyalpha 0  // Smooth depth-based exclusion
+$copyalpha 0  // Depth-based exclusion
 ```
 
 **Approach 2: Shader-level (manual threshold)**
@@ -182,7 +194,9 @@ This creates a hard cutoff at the threshold value.
 
 ### Framebuffers
 
-`_rt_FullFrameFB` - Native screen resolution. Includes viewmodels. **Alpha channel contains depth information** (low alpha = near, high alpha = far).
+`_rt_FullFrameFB` - Native screen resolution. Includes viewmodels. **Alpha channel contains basic depth information** (low alpha = near, high alpha = far).
+
+`_rt_FullFrameFB1` - Same as `_rt_FullFrameFB` but only exists with `mat_viewportscale 0.9999999`. As such, it is not the native resolution (ie 1920x1080 -> 1919x1079)
 
 `_rt_PowerOfTwoFB` - Allocated as 1024x1024 texture. Lower quality compared to FullFrameFB. Viewmodels not included. Also has depth in alpha channel.
 
@@ -200,15 +214,17 @@ Effects requiring precise color math will be affected by this compression.
 
 **Required:**
 - `$pixshader "name_ps20"` - Shader to use
-- `$basetexture "_rt_FullFrameFB"` - Texture input
+- `$basetexture "_rt_FullFrameFB1"` - Texture input
 - `$x360appchooser 1` - Required for shader to display
 
 **Alpha handling:**
 - `$copyalpha 1` - Preserves framebuffer alpha (depth). Shader effect applies to everything including viewmodels and nearby objects.
-- `$copyalpha 0` - Material system uses alpha for depth-based blending. Shader does not apply to viewmodels and nearby objects.
-
 <div style="overflow-x: auto; white-space: nowrap;">
   <img src="images/copyalpha1.png" width="45%" style="display: inline-block;">
+</div>
+
+- `$copyalpha 0` - Material system uses alpha for depth-based blending. Shader does not apply to viewmodels and nearby objects.
+<div style="overflow-x: auto; white-space: nowrap;">
   <img src="images/copyalpha0.png" width="45%" style="display: inline-block;">
 </div>
 

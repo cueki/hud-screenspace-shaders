@@ -1,7 +1,7 @@
 screenspace_general
 {
 	$pixshader "blur_ps20"
-	$basetexture "_rt_FullFrameFB"
+	$basetexture "_rt_FullFrameFB1"
 
 	$x360appchooser 1
 	$copyalpha 0
