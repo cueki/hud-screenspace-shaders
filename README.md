@@ -65,10 +65,10 @@ There are a couple of different framebuffers we can access, depending on setting
 - Change `_rt_FullFrameFB1` to `_rt_FullFrameFB` and set `mat_hdr_level 1` instead of `mat_viewportscale`. Unfortunately, this does not work on all maps, and adds its own post processing that might interfere with the desired effect. 
 - Or enable motion blur with `mat_motion_blur_enabled 1` and disable it visually with `mat_motion_blur_strength 0`. This ensures the `_rt_FullFrameFB` framebuffer exists, however, it is created without the viewmodel, so the viewmodel might not exist/be transparent with the alpha.
 
-**For `_rt_PowerOfTwoFB`**
+**For `_rt_PowerOfTwoFB`:**
 - Use `_rt_PowerOfTwoFB` instead of `_rt_FullFrameFB`. This framebuffer is used for depth calculations earlier in the pipeline, it always exists. Unfortunately it is a 1024x1024 image and therefore the mapping of pixels is not as clear as the full resolution framebuffer. It also does not contain the viewmodel. On the plus side you can use it without `mat_hdr_level 1` or `mat_viewportscale`, so if you are doing hud overlays instead of fullscreen shaders it might be a better option.
 
-**Disable the shader:**
+**To disable the shader:**
 - Disable the ImagePanel with `"visible" "0"` and `"enabled" "0"`, then refresh the hud with `hud_reloadscheme`.
 
 ### Installation
@@ -83,14 +83,16 @@ There are a couple of different framebuffers we can access, depending on setting
 ```
 CustomShaderOverlay
 {
-    "ControlName"	"ImagePanel"
-    "xpos"		    "0"
-    "ypos"		    "0"
-    "zpos"		    "-10000"
-    "wide"		    "f0"
-    "tall"		    "480"
-    "scaleimage"	"1"
-    "image"			"replay/thumbnails/depthfog_far"
+    "ControlName"   "ImagePanel"
+    "xpos"          "0"
+    "ypos"          "0"
+    "zpos"          "-10000"
+    "wide"          "f0"
+    "tall"          "480"
+    "scaleimage"    "1"
+    "image"         "replay/thumbnails/depthfog_far"
+    "visible"       "1"
+    "enabled"       "1"
 }
 ```
 ## Creating New Shaders
