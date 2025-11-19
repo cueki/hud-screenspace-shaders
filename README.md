@@ -62,7 +62,7 @@ Note: `_rt_PowerOfTwoFB` doesn't require this, it's populated on-demand via `Cop
 There are a couple of different framebuffers we can access, depending on settings. Here are some things to consider.
 
 **For `_rt_FullFrameFB`:**
-- Change `_rt_FullFrameFB1` to `_rt_FullFrameFB` and set `mat_hdr_level 1` instead of `mat_viewportscale`. Unfortunately, this does not work on all maps, and adds its own post processing that might interfere with the desired effect. 
+- Change `_rt_FullFrameFB1` to `_rt_FullFrameFB` in the VMTs and set `mat_hdr_level 1` instead of `mat_viewportscale`. Unfortunately, this does not work on all maps, and adds its own post processing that might interfere with the desired effect. 
 - Or enable motion blur with `mat_motion_blur_enabled 1` and disable it visually with `mat_motion_blur_strength 0`. This ensures the `_rt_FullFrameFB` framebuffer exists, however, it is created without the viewmodel, so the viewmodel might not exist/be transparent with the alpha.
 
 **For `_rt_PowerOfTwoFB`:**
