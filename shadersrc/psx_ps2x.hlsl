@@ -21,7 +21,7 @@
 
 static const float3 LUM_WEIGHTS = float3(0.299, 0.587, 0.114);
 
-// 4x4 dither pattern (from Godot shader)
+// 4x4 dither pattern (from Godot shader https://godotshaders.com/shader/ps1-psx-model/)
 static const float ditherPattern[16] = {
     0.00, 0.50, 0.10, 0.65,
     0.75, 0.25, 0.90, 0.35,
@@ -52,7 +52,7 @@ float4 main( PS_INPUT i ) : COLOR
 {
     float2 uv = i.uv;
 
-    // Optional: Snap UV to low-res grid
+    // Snap UV to low-res grid
     if (resolutionX > 0.0 && resolutionY > 0.0)
     {
         float2 res = float2(resolutionX, resolutionY);
@@ -88,11 +88,9 @@ float4 main( PS_INPUT i ) : COLOR
         color = lerp(float3(lum, lum, lum), color, saturation);
     }
 
-    // CRT color temperature (warm/cool tint)
+    // Color temperature
     if (colorTemp != 0.0)
     {
-        // Warm = boost red/yellow, reduce blue
-        // Cool = boost blue, reduce red/yellow
         color.r += colorTemp * 0.1;
         color.g += colorTemp * 0.05;
         color.b -= colorTemp * 0.1;
@@ -103,7 +101,7 @@ float4 main( PS_INPUT i ) : COLOR
     float2 screenPos = i.uv / TexBaseSize;
     float dither = getDitherValue(screenPos);
 
-    // Color quantization with dithering (threshold-based)
+    // Color quantization with dithering
     float depth = colorPrecision - 1.0;
     if (ditherStrength > 0.0)
     {
@@ -118,7 +116,7 @@ float4 main( PS_INPUT i ) : COLOR
     }
     color = saturate(color);
 
-    // RGB subpixel pattern (CRT phosphor simulation)
+    // RGB subpixel pattern (my shitty attempt at CRT phosphor simulation)
     if (subpixelIntensity > 0.0)
     {
         float2 screenPos = i.uv / TexBaseSize;
