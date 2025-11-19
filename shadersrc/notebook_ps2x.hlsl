@@ -81,7 +81,7 @@ float4 main( PS_INPUT i ) : COLOR
     // Draw clean black lines on white paper (no blotch effect)
     float3 finalColor = paper * (1.0 - edge * lineStrength);
 
-    // Optional: Add ruled notebook lines
+    // Optional ruled notebook lines
     if (ruledLines > 0.0)
     {
         float linePos = frac(i.uv.y * ruledLines);

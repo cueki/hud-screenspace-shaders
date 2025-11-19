@@ -2,3 +2,4 @@ shadersrc/bin/
 shadersrc/shaders/
 *.cpp
 compile_and_deploy.sh
+MinecraftShaderProgramming/
