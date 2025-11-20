@@ -19,8 +19,6 @@
 // RGB subpixel intensity (0.0 = none, 0.3 = subtle, 0.7 = strong)
 #define subpixelIntensity Constants1.w
 
-static const float3 LUM_WEIGHTS = float3(0.299, 0.587, 0.114);
-
 // 4x4 dither pattern (from Godot shader https://godotshaders.com/shader/ps1-psx-model/)
 static const float ditherPattern[16] = {
     0.00, 0.50, 0.10, 0.65,

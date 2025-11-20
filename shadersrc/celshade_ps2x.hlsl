@@ -9,8 +9,6 @@
 // Edge color darkness
 #define edgeDarkness Constants0.z
 
-static const float3 LUM_WEIGHTS = float3(0.299, 0.587, 0.114);
-
 float4 main( PS_INPUT i ) : COLOR
 {
     float2 pixelSize = TexBaseSize.xy;

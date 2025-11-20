@@ -1,5 +1,44 @@
 // common data shared among all screenspace shaders
 
+// Common constants
+static const float3 LUM_WEIGHTS = float3(0.299, 0.587, 0.114);
+#define PI 3.14159265359
+
+// Hash functions
+float hash(float n)
+{
+    return frac(sin(n) * 43758.5453);
+}
+
+float hash2(float2 p)
+{
+    float3 p3 = frac(float3(p.xyx) * 0.2831);
+    p3 += dot(p3, p3.yzx + 19.19);
+    return frac((p3.x + p3.y) * p3.z);
+}
+
+// 2D noise
+float noise2D(float2 x)
+{
+    float2 p = floor(x);
+    float2 f = frac(x);
+    f = f * f * (3.0 - 2.0 * f);
+    float n = p.x + p.y * 157.0;
+    return lerp(
+        lerp(hash(n + 0.0), hash(n + 1.0), f.x),
+        lerp(hash(n + 157.0), hash(n + 158.0), f.x),
+        f.y
+    );
+}
+
+// 2D rotation matrix
+float2x2 rotate2d(float angle)
+{
+    float s = sin(angle);
+    float c = cos(angle);
+    return float2x2(c, -s, s, c);
+}
+
 // up to four textures available for sampling
 sampler TexBase : register( s0 ); // $basetexture
 sampler Tex1    : register( s1 ); // $texture1

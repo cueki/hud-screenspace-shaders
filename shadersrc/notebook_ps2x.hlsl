@@ -1,37 +1,14 @@
-// Notebook/Paper Shader - makes the game look like it's drawn on paper
+// Notebook Paper Shader
 #include "common.hlsl"
 
-// Edge/line strength (0.0 = no outlines, 1.0 = strong pen lines)
+// Edge/line strength
 #define lineStrength Constants0.x
-// Paper grain amount (0.0 = smooth, 0.1 = textured)
+// Paper grain amount
 #define grainAmount Constants0.y
-// Ruled lines spacing (0.0 = no lines, 20.0 = notebook lines)
+// Ruled lines spacing
 #define ruledLines Constants0.z
-// Paper darkness (0.0 = white paper, 0.2 = aged paper)
+// Paper darkness
 #define paperTone Constants0.w
-
-static const float3 LUM_WEIGHTS = float3(0.299, 0.587, 0.114);
-
-// Simple hash function for procedural noise
-float hash(float2 p)
-{
-    return frac(sin(dot(p, float2(127.1, 311.7))) * 43758.5453);
-}
-
-// Paper texture noise
-float paperNoise(float2 uv)
-{
-    float2 p = floor(uv);
-    float2 f = frac(uv);
-    f = f * f * (3.0 - 2.0 * f);
-
-    float n = p.x + p.y * 157.0;
-    return lerp(
-        lerp(hash(float2(n + 0.0, n + 0.0)), hash(float2(n + 1.0, n + 1.0)), f.x),
-        lerp(hash(float2(n + 157.0, n + 157.0)), hash(float2(n + 158.0, n + 158.0)), f.x),
-        f.y
-    );
-}
 
 float4 main( PS_INPUT i ) : COLOR
 {
@@ -71,28 +48,28 @@ float4 main( PS_INPUT i ) : COLOR
     float paperWhite = 1.0 - paperTone;
     float3 paper = float3(paperWhite, paperWhite, paperWhite);
 
-    // Optional fine grain only
+    // Optional grain
     if (grainAmount > 0.0)
     {
-        float grain = paperNoise(i.uv * 2000.0) * grainAmount;
+        float grain = noise2D(i.uv * 2000.0) * grainAmount;
         paper += grain;
     }
 
-    // Draw clean black lines on white paper (no blotch effect)
+    // Draw black lines on white paper
     float3 finalColor = paper * (1.0 - edge * lineStrength);
 
-    // Optional ruled notebook lines
+    // Optional notebook lines
     if (ruledLines > 0.0)
     {
         float linePos = frac(i.uv.y * ruledLines);
         float isLine = step(0.97, linePos);
 
-        // Slight blue tint for ruled lines
+        // Blue tint for ruled lines
         float3 lineColor = float3(0.6, 0.7, 0.9);
         finalColor = lerp(finalColor, finalColor * lineColor, isLine * 0.4);
     }
 
-    // Slight warm tint for paper feel
+    // Slight warm tint for paper
     finalColor *= float3(1.0, 0.98, 0.95);
 
     return float4(finalColor, centerSample.a);

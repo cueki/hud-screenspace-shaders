@@ -3,3 +3,4 @@ shadersrc/shaders/
 *.cpp
 compile_and_deploy.sh
 MinecraftShaderProgramming/
+ideas/

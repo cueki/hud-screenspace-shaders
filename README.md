@@ -41,6 +41,18 @@ A collection of ready-to-use screenspace shaders for TF2 that can be activated v
   <img src="images/psx_shader2.png" width="45%" style="display: inline-block;">
 </div>
 
+### Red
+<div style="overflow-x: auto; white-space: nowrap;">
+  <img src="images/red_shader1.png" width="45%" style="display: inline-block;">
+  <img src="images/red_shader2.png" width="45%" style="display: inline-block;">
+</div>
+
+### Fullbright
+*Screenshots coming soong...*
+
+### Halftone
+*Screenshots coming soon...*
+
 </details>
 
 ### Required Game Setting
