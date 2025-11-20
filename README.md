@@ -266,6 +266,8 @@ Linear color flags are intended for UI shaders that use custom textures or const
 
 **Reflections** - No environment data
 
+**Most *real* depth** - Depth buffer is limited
+
 ### What Shaders CAN Do
 
 **Color grading** - Sepia, contrast, saturation, tinting
@@ -282,11 +284,6 @@ Linear color flags are intended for UI shaders that use custom textures or const
 
 **Vignettes** - Darkening edges
 
-### What Shaders MIGHT be able to do
-
-**Depth stuff** - Like fog, the depth buffer is exposed, have not tested it myself - edit: the depthbuffer sucks
-
-**Velocity stuff** - Wonky motion blur using speed parameters from the hud?
 
 ### Performance Notes
 
