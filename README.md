@@ -48,10 +48,10 @@ A collection of ready-to-use screenspace shaders for TF2 that can be activated v
 </div>
 
 ### Fullbright
-*Screenshots coming soong...*
+*WIP, Screenshots coming soon...*
 
 ### Halftone
-*Screenshots coming soon...*
+*WIP Screenshots coming soon...*
 
 </details>
 
@@ -102,7 +102,7 @@ CustomShaderOverlay
     "wide"          "f0"
     "tall"          "480"
     "scaleimage"    "1"
-    "image"         "replay/thumbnails/depthfog_far"
+    "image"         "replay/thumbnails/shader_vmt_name"
     "visible"       "1"
     "enabled"       "1"
 }
