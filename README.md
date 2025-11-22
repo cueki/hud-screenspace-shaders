@@ -1,6 +1,6 @@
 ## What This Is
 
-A collection of ready-to-use screenspace shaders for TF2 that can be activated via HUD elements.
+A collection of screenspace shaders for TF2 that can be activated via HUD elements.
 
 <details open>
 <summary><h2>Example Screenshots</h2></summary>
@@ -47,6 +47,13 @@ A collection of ready-to-use screenspace shaders for TF2 that can be activated v
   <img src="images/red_shader2.png" width="45%" style="display: inline-block;">
 </div>
 
+### Kitsune
+*try flat textures with this :)*
+<div style="overflow-x: auto; white-space: nowrap;">
+  <img src="images/kitsune_shader1.png" width="45%" style="display: inline-block;">
+  <img src="images/kitsune_shader2.png" width="45%" style="display: inline-block;">
+</div>
+
 ### Fullbright
 *WIP, Screenshots coming soon...*
 
@@ -55,7 +62,9 @@ A collection of ready-to-use screenspace shaders for TF2 that can be activated v
 
 </details>
 
-### Required Game Setting
+**Note: these are all taken on mastercomfig-low, different graphical settings will require tweaking the shader parameters in the VMT**
+
+### Required Command
 
 Add to your `autoexec`:
 ```
@@ -70,8 +79,9 @@ In simpler terms, we are hijacking the upscale post-process with our own shader.
 
 Note: `_rt_PowerOfTwoFB` doesn't require this, it's populated on-demand via `CopyRenderTargetToTexture()` when materials request it.
 
-### Important Note! (Please Read)
-There are a couple of different framebuffers we can access, depending on settings. Here are some things to consider.
+### Please Read
+
+There are a few different framebuffers we can access, depending on settings. Here are some things to consider.
 
 **For `_rt_FullFrameFB`:**
 - Change `_rt_FullFrameFB1` to `_rt_FullFrameFB` in the VMTs and set `mat_hdr_level 1` instead of `mat_viewportscale`. Unfortunately, this does not work on all maps, and adds its own post processing that might interfere with the desired effect. 
@@ -168,7 +178,7 @@ Proxies
 
 ### Using Depth for Masking
 
-The alpha channel of any `_rt_FullFrameFB` contains depth information. You can use this to exclude nearby objects (viewmodel, floor) from shader effects.
+The alpha channel of any `_rt_FullFrameFB` contains depth information. You can use this to exclude nearby objects (mostly just the viewmodel) from shader effects.
 
 **Approach 1: VMT-level**
 
@@ -204,7 +214,7 @@ $c0_y     0.3  // Depth threshold (0.0-1.0)
 
 This creates a hard cutoff at the threshold value.
 
-## Development Notes
+## Extra Notes
 
 ### Framebuffers
 
@@ -283,7 +293,6 @@ Linear color flags are intended for UI shaders that use custom textures or const
 **Animated effects** - Using time parameter
 
 **Vignettes** - Darkening edges
-
 
 ### Performance Notes
 
