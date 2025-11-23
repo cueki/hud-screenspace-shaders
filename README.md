@@ -11,7 +11,7 @@ A collection of screenspace shaders for TF2 that can be activated via HUD elemen
   <img src="images/blur_shader2.png" width="45%" style="display: inline-block;">
 </div>
 
-### Cel
+### Celshade
 <div style="overflow-x: auto; white-space: nowrap;">
   <img src="images/cel_shader1.png" width="45%" style="display: inline-block;">
   <img src="images/cel_shader2.png" width="45%" style="display: inline-block;">
@@ -54,7 +54,14 @@ A collection of screenspace shaders for TF2 that can be activated via HUD elemen
   <img src="images/kitsune_shader2.png" width="45%" style="display: inline-block;">
 </div>
 
-### Fullbright
+### Nightmode
+*with custom skybox + some mods...*
+<div style="overflow-x: auto; white-space: nowrap;">
+  <img src="images/nightmode_shader1.png" width="45%" style="display: inline-block;">
+  <img src="images/nightmode_shader2.png" width="45%" style="display: inline-block;">
+</div>
+
+### Noshadows
 *WIP, Screenshots coming soon...*
 
 ### Halftone
@@ -62,7 +69,7 @@ A collection of screenspace shaders for TF2 that can be activated via HUD elemen
 
 </details>
 
-**Note: these are all taken on mastercomfig-low, different graphical settings will require tweaking the shader parameters in the VMT**
+**Note: these are all taken on mastercomfig-low, different graphical settings may require tweaking the shader parameters in the VMT**
 
 ### Required Command
 
@@ -184,10 +191,6 @@ The alpha channel of any `_rt_FullFrameFB` contains depth information. You can u
 
 Set `$copyalpha 0` in your VMT. The material system will use alpha for depth-based blending, automatically excluding viewmodels and creating a distance-based falloff.
 
-```
-$copyalpha 0  // Depth-based exclusion
-```
-
 **Approach 2: Shader-level (manual threshold)**
 
 Implement depth masking in your shader code with `$copyalpha 1`:
@@ -247,7 +250,7 @@ Effects requiring precise color math will be affected by this compression.
   <img src="images/copyalpha1.png" width="45%" style="display: inline-block;">
 </div>
 
-- `$copyalpha 0` - Material system uses alpha for depth-based blending. Shader does not apply to viewmodels and nearby objects.
+- `$copyalpha 0` - Material system uses alpha for depth. Shader does not apply to viewmodels and nearby objects.
 <div style="overflow-x: auto; white-space: nowrap;">
   <img src="images/copyalpha0.png" width="45%" style="display: inline-block;">
 </div>
