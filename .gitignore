@@ -4,3 +4,5 @@ shadersrc/shaders/
 compile_and_deploy.sh
 MinecraftShaderProgramming/
 ideas/
+updated_hlsl/
+*.gpjs

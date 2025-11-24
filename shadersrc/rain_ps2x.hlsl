@@ -5,6 +5,7 @@
 
 float4 main( PS_INPUT i ) : COLOR
 {
+    float2 uv = scaleFBUV(i.uv);
     float2 q = i.uv;
     float2 p = -1.0 + 2.0 * q;
     p.x *= 1.0 / (TexBaseSize.x / TexBaseSize.y);
@@ -14,13 +15,13 @@ float4 main( PS_INPUT i ) : COLOR
     float dist = length(offset);
     float aberrationStrength = pow(abs(dist), 0.7) * 0.0022; // Power < 1 makes it extend further in
 
-    float2 uvR = clamp(i.uv - offset * aberrationStrength, 0.0, 1.0);
-    float2 uvB = clamp(i.uv + offset * aberrationStrength, 0.0, 1.0);
+    float2 uvR = clamp(uv - offset * aberrationStrength, 0.0, 1.0);
+    float2 uvB = clamp(uv + offset * aberrationStrength, 0.0, 1.0);
 
     float r = tex2D(TexBase, uvR).r;
-    float g = tex2D(TexBase, i.uv).g;
+    float g = tex2D(TexBase, uv).g;
     float b = tex2D(TexBase, uvB).b;
-    float4 baseColor = float4(r, g, b, tex2D(TexBase, i.uv).a);
+    float4 baseColor = float4(r, g, b, tex2D(TexBase, uv).a);
 
     // Rain (by Dave Hoskins) with variation to reduce repetition
     float time = iTime;

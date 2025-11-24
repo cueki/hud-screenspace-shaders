@@ -10,7 +10,7 @@
 
 float4 main( PS_INPUT i ) : COLOR
 {
-    float4 col = tex2D(TexBase, i.uv);
+    float4 col = tex2D(TexBase, scaleFBUV(i.uv));
 
     // Get luminance
     float lum = dot(col.rgb, LUM_WEIGHTS);

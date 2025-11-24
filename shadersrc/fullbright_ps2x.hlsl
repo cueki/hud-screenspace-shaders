@@ -14,7 +14,7 @@
 
 float4 main( PS_INPUT i ) : COLOR
 {
-    float4 baseColor = tex2D(TexBase, i.uv);
+    float4 baseColor = tex2D(TexBase, scaleFBUV(i.uv));
     float3 color = baseColor.rgb;
 
     // Current brightness

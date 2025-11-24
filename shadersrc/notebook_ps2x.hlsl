@@ -13,18 +13,19 @@
 float4 main( PS_INPUT i ) : COLOR
 {
     float2 pixelSize = TexBaseSize.xy;
+    float2 uv = scaleFBUV(i.uv);
 
     // Sample 3x3 grid for Sobel edge detection
-    float3 tl = tex2D(TexBase, i.uv + float2(-1, -1) * pixelSize).rgb;
-    float3 t  = tex2D(TexBase, i.uv + float2( 0, -1) * pixelSize).rgb;
-    float3 tr = tex2D(TexBase, i.uv + float2( 1, -1) * pixelSize).rgb;
-    float3 l  = tex2D(TexBase, i.uv + float2(-1,  0) * pixelSize).rgb;
-    float4 centerSample = tex2D(TexBase, i.uv);
+    float3 tl = tex2D(TexBase, uv + float2(-1, -1) * pixelSize).rgb;
+    float3 t  = tex2D(TexBase, uv + float2( 0, -1) * pixelSize).rgb;
+    float3 tr = tex2D(TexBase, uv + float2( 1, -1) * pixelSize).rgb;
+    float3 l  = tex2D(TexBase, uv + float2(-1,  0) * pixelSize).rgb;
+    float4 centerSample = tex2D(TexBase, uv);
     float3 c  = centerSample.rgb;
-    float3 r  = tex2D(TexBase, i.uv + float2( 1,  0) * pixelSize).rgb;
-    float3 bl = tex2D(TexBase, i.uv + float2(-1,  1) * pixelSize).rgb;
-    float3 b  = tex2D(TexBase, i.uv + float2( 0,  1) * pixelSize).rgb;
-    float3 br = tex2D(TexBase, i.uv + float2( 1,  1) * pixelSize).rgb;
+    float3 r  = tex2D(TexBase, uv + float2( 1,  0) * pixelSize).rgb;
+    float3 bl = tex2D(TexBase, uv + float2(-1,  1) * pixelSize).rgb;
+    float3 b  = tex2D(TexBase, uv + float2( 0,  1) * pixelSize).rgb;
+    float3 br = tex2D(TexBase, uv + float2( 1,  1) * pixelSize).rgb;
 
     // Convert to luminance
     float lum_tl = dot(tl, LUM_WEIGHTS);

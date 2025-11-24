@@ -33,9 +33,10 @@ float sobelEdge(float2 uv, float2 px) {
 
 float4 main(PS_INPUT i) : COLOR
 {
-    float4 baseColor = tex2D(TexBase, i.uv);
+    float2 uv = scaleFBUV(i.uv);
+    float4 baseColor = tex2D(TexBase, uv);
 
-    float rawEdge = sobelEdge(i.uv, TexBaseSize);
+    float rawEdge = sobelEdge(uv, TexBaseSize);
     float conf = smoothstep(edgeMin, edgeMax, rawEdge);
     conf = pow(conf, edgePower);
     float edgeMask = step(edgeThreshold, conf);
@@ -48,7 +49,7 @@ float4 main(PS_INPUT i) : COLOR
     {
         for (int oy = -1; oy <= 1; oy++)
         {
-            float3 c = tex2D(TexBase, i.uv + float2(ox, oy) * TexBaseSize).rgb;
+            float3 c = tex2D(TexBase, uv + float2(ox, oy) * TexBaseSize).rgb;
             float cMax = max(c.r, max(c.g, c.b));
             float cMin = min(c.r, min(c.g, c.b));
             float sat = (cMax - cMin) / (cMax + 0.001);

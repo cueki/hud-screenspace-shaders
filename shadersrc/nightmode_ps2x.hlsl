@@ -17,7 +17,7 @@
 
 float4 main( PS_INPUT i ) : COLOR
 {
-    float3 color = tex2D(TexBase, i.uv).rgb;
+    float3 color = tex2D(TexBase, scaleFBUV(i.uv)).rgb;
 
     // Shadow mask
     float luma = dot(color, float3(0.2126, 0.7152, 0.0722));

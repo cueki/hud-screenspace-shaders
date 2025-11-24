@@ -48,7 +48,7 @@ float reduceColor(float raw, float dither, float depth)
 
 float4 main( PS_INPUT i ) : COLOR
 {
-    float2 uv = i.uv;
+    float2 uv = scaleFBUV(i.uv);
 
     // Snap UV to low-res grid
     if (resolutionX > 0.0 && resolutionY > 0.0)
@@ -77,7 +77,7 @@ float4 main( PS_INPUT i ) : COLOR
         color = tex2D(TexBase, uv).rgb;
     }
 
-    float alpha = tex2D(TexBase, i.uv).a;
+    float alpha = tex2D(TexBase, scaleFBUV(i.uv)).a;
 
     // Saturation boost
     if (saturation != 1.0)

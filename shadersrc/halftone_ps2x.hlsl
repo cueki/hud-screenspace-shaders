@@ -88,7 +88,7 @@ float4 main( PS_INPUT i ) : COLOR
     float2 screenPos = i.uv / TexBaseSize;
 
     // Sample the scene color at this pixel
-    float4 baseColor = tex2D(TexBase, i.uv);
+    float4 baseColor = tex2D(TexBase, scaleFBUV(i.uv));
     float3 color = baseColor.rgb;
 
     // Normalize colors to use full range

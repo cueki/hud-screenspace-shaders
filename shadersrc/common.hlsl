@@ -5,15 +5,20 @@ static const float3 LUM_WEIGHTS = float3(0.299, 0.587, 0.114);
 #define PI 3.14159265359
 
 // Hash functions
+// "Hash without Sine" by Dave_Hoskins
+// https://www.shadertoy.com/view/4djSRW
 float hash(float n)
 {
-    return frac(sin(n) * 43758.5453);
+    n = frac(n * 0.1031);
+    n *= n + 33.33;
+    n *= n + n;
+    return frac(n);
 }
 
 float hash2(float2 p)
 {
-    float3 p3 = frac(float3(p.xyx) * 0.2831);
-    p3 += dot(p3, p3.yzx + 19.19);
+    float3 p3 = frac(float3(p.xyx) * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
     return frac((p3.x + p3.y) * p3.z);
 }
 
@@ -52,6 +57,13 @@ float2 TexBaseSize : register( c4 );
 float2 Tex1Size    : register( c5 );
 float2 Tex2Size    : register( c6 );
 float2 Tex3Size    : register( c7 );
+
+// Scale UV to stretch framebuffer to fill overlay
+// For us, the framebuffer is 1 pixel smaller than overlay in each dimension
+float2 scaleFBUV(float2 uv)
+{
+    return uv / (1.0 + TexBaseSize);
+}
 
 // customizable parameters $c0, $c1, $c2, $c3, $c4
 const float4 Constants0 : register( c0 );

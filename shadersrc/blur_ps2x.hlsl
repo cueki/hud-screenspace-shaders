@@ -27,7 +27,7 @@ float4 main( PS_INPUT i ) : COLOR
 {
     // Calculate pixel size and scale by blur strength
     float2 pixelSize = TexBaseSize.xy * blurStrength;
-    float4 blurredColor = getAverageColor(i.uv, pixelSize);
+    float4 blurredColor = getAverageColor(scaleFBUV(i.uv), pixelSize);
 
     return blurredColor;
 }

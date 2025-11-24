@@ -7,7 +7,7 @@
 
 float4 main( PS_INPUT i ) : COLOR
 {
-    float4 color = tex2D(TexBase, i.uv);
+    float4 color = tex2D(TexBase, scaleFBUV(i.uv));
 
     // Classic sepia tone matrix
     float4 sepiaColor;
