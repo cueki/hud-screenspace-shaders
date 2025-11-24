@@ -71,11 +71,12 @@ A collection of screenspace shaders for TF2 that can be activated via HUD elemen
 
 **Note: these are all taken on mastercomfig-low, different graphical settings may require tweaking the shader parameters in the VMT**
 
-### Required Command
+### Required Commands
 
 Add to your `autoexec`:
 ```
 `mat_viewportscale 0.9999999`
+`mat_viewportupscale 1`
 ```
 
 **This is mandatory for `_rt_FullFrameFB1`.** Without it, shaders will show black/white screens.
