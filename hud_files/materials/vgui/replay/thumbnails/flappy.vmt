@@ -1,0 +1,664 @@
+screenspace_general
+{
+	$pixshader "flappy_ps20"
+
+	$x360appchooser 1
+	$ignorez 1
+	$translucent 0
+	$alpha_blend 1
+	$copyalpha 0
+
+	// Pipe positions
+	$pipe1X "0.5"
+	$pipe2X "1.2"
+
+	// Pipe gap centers (randomized after first one)
+	$pipe1GapY "0.4"
+	$pipe2GapY "0.6"
+
+	// Pipe gap sizes (randomized after first one)
+	$pipe1GapSize "0.20"
+	$pipe2GapSize "0.25"
+	$randomGapSize "0"
+	$baseGapSize "0"
+
+	// Difficulty scaling
+	$difficultyRamp "0"
+	$difficultyCorr "0"
+	$difficultyTime "0"
+	$isPlaying "0"
+	$gapShrinkRate "0.005"
+	$minGapSize "0.12"
+	$maxGapSize "0.23"
+	$gapReduction "0"
+
+	// Random horizontal offset for wrap (0.5 to 1.0 past other pipe)
+	$randomWrapOffset "0.7"
+	$wrapDestination "1.5"
+
+	// Game state
+	$gameOver "0"
+	$score "0"
+
+	// Timing
+	$ramp "0"
+	$lastRamp "0"
+	$deltaTime "0"
+	$tickRate "0.033"
+
+	// Physics constants (tuned for ~120fps)
+	$gravity "0.0004"
+	$flapStrength "0.008"
+	$pipeSpeed "0.005"
+
+	// Other constants
+	$zero "0"
+	$one "1"
+	$half "0.5"
+	$negWrapPoint "-0.2"
+	$speedThreshold "35"
+	$groundLevel "0.15"
+	$ceilingLevel "0.9"
+
+	// Temp variables
+	$playerSpeed "0"
+	$isFlapping "0"
+	$wasFlapping "0"
+	$notWasFlapping "0"
+	$flapImpulse "0"
+	$newBirdVel "0"
+
+	// Pipe wrap detection
+	$pipe1WasWrapped "0"
+	$pipe1JustWrapped "0"
+	$pipe2WasWrapped "0"
+	$pipe2JustWrapped "0"
+	$pipe1IsWrapped "0"
+	$pipe2IsWrapped "0"
+	$notPipe1WasWrapped "0"
+	$notPipe2WasWrapped "0"
+
+	// Random gap storage
+	$randomGap "0.5"
+
+	// Collision detection
+	$birdLeft "0"
+	$birdRight "0"
+	$pipeRight "0"
+	$inPipe1Col "0"
+	$inPipe2Col "0"
+	$gapTop "0"
+	$gapBottom "0"
+	$aboveGap "0"
+	$belowGap "0"
+	$hitPipe1 "0"
+	$hitPipe2 "0"
+
+	// Bird state
+	$birdY "0.5"
+	$birdVel "0"
+
+	// Bird hitbox (one pixel vertical lol)
+	$birdX "0.2"
+	$birdSize "0.04"
+	$pipeWidth "0.1"
+	$gapHalfSize "0.18"
+
+	// Reset timer
+	$idleTime "0"
+	$idleIncrement "0.005"
+	$resetThreshold "1"
+	$shouldReset "0"
+
+	Proxies
+	{
+		// Player speed for flap input
+		PlayerSpeed
+		{
+			scale "1"
+			resultVar "$playerSpeed"
+		}
+		// isFlapping = 1 if speed > threshold, else 0
+		LessOrEqual
+		{
+			srcVar1 "$playerSpeed"
+			srcVar2 "$speedThreshold"
+			resultVar "$isFlapping"
+			greaterVar "$one"
+			LessEqualVar "$zero"
+		}
+		// flapImpulse = isFlapping and not wasFlapping
+		Subtract
+		{
+			srcVar1 "$one"
+			srcVar2 "$wasFlapping"
+			resultVar "$notWasFlapping"
+		}
+		Multiply
+		{
+			srcVar1 "$isFlapping"
+			srcVar2 "$notWasFlapping"
+			resultVar "$flapImpulse"
+		}
+		// Store current flap state
+		Multiply
+		{
+			srcVar1 "$isFlapping"
+			srcVar2 "$one"
+			resultVar "$wasFlapping"
+		}
+
+		// isPlaying = not gameOver
+		Subtract
+		{
+			srcVar1 "$one"
+			srcVar2 "$gameOver"
+			resultVar "$isPlaying"
+		}
+
+		// Difficulty """function"""
+		// difficulty timer increases while playing, resets on game over
+		LinearRamp
+		{
+			rate "1"
+			resultVar "$difficultyRamp"
+		}
+		// If not playing difficultyCorr = difficultyRamp
+		// If playing difficultyCorr stays the same
+		LessOrEqual
+		{
+			srcVar1 "$isPlaying"
+			srcVar2 "$half"
+			resultVar "$difficultyCorr"
+			LessEqualVar "$difficultyRamp"
+			greaterVar "$difficultyCorr"
+		}
+		Subtract
+		{
+			srcVar1 "$difficultyRamp"
+			srcVar2 "$difficultyCorr"
+			resultVar "$difficultyTime"
+		}
+		Multiply
+		{
+			srcVar1 "$difficultyTime"
+			srcVar2 "$gapShrinkRate"
+			resultVar "$gapReduction"
+		}
+		Subtract
+		{
+			srcVar1 "$maxGapSize"
+			srcVar2 "$gapReduction"
+			resultVar "$baseGapSize"
+		}
+		// Clamp to minimum
+		LessOrEqual
+		{
+			srcVar1 "$baseGapSize"
+			srcVar2 "$minGapSize"
+			resultVar "$baseGapSize"
+			LessEqualVar "$minGapSize"
+			greaterVar "$baseGapSize"
+		}
+		// vel = vel - gravity
+		Subtract
+		{
+			srcVar1 "$birdVel"
+			srcVar2 "$gravity"
+			resultVar "$newBirdVel"
+		}
+
+		// Input detected
+		LessOrEqual
+		{
+			srcVar1 "$flapImpulse"
+			srcVar2 "$half"
+			resultVar "$birdVel"
+			greaterVar "$flapStrength"
+			LessEqualVar "$newBirdVel"
+		}
+		Add
+		{
+			srcVar1 "$birdY"
+			srcVar2 "$birdVel"
+			resultVar "$birdY"
+		}
+		// Keep bird on screen
+		LessOrEqual
+		{
+			srcVar1 "$birdY"
+			srcVar2 "$groundLevel"
+			resultVar "$birdY"
+			LessEqualVar "$groundLevel"
+			greaterVar "$birdY"
+		}
+		LessOrEqual
+		{
+			srcVar1 "$birdY"
+			srcVar2 "$ceilingLevel"
+			resultVar "$birdY"
+			LessEqualVar "$birdY"
+			greaterVar "$ceilingLevel"
+		}
+
+		// Move pipes
+		Subtract
+		{
+			srcVar1 "$pipe1X"
+			srcVar2 "$pipeSpeed"
+			resultVar "$pipe1X"
+		}
+		// We have to do each pipe individually...
+		// Check if pipe1 is at wrap point
+		LessOrEqual
+		{
+			srcVar1 "$pipe1X"
+			srcVar2 "$negWrapPoint"
+			resultVar "$pipe1IsWrapped"
+			LessEqualVar "$one"
+			greaterVar "$zero"
+		}
+		// Detect wrap edge for pipe1
+		Subtract
+		{
+			srcVar1 "$one"
+			srcVar2 "$pipe1WasWrapped"
+			resultVar "$notPipe1WasWrapped"
+		}
+		Multiply
+		{
+			srcVar1 "$pipe1IsWrapped"
+			srcVar2 "$notPipe1WasWrapped"
+			resultVar "$pipe1JustWrapped"
+		}
+		Multiply
+		{
+			srcVar1 "$pipe1IsWrapped"
+			srcVar2 "$one"
+			resultVar "$pipe1WasWrapped"
+		}
+		// Randomize pipe1 gap position each wrap
+		UniformNoise
+		{
+			minVal "0.3"
+			maxVal "0.7"
+			resultVar "$randomGap"
+		}
+		LessOrEqual
+		{
+			srcVar1 "$pipe1JustWrapped"
+			srcVar2 "$half"
+			resultVar "$pipe1GapY"
+			greaterVar "$randomGap"
+			LessEqualVar "$pipe1GapY"
+		}
+		// Randomize pipe1 gap size each wrap
+		UniformNoise
+		{
+			minVal "-0.05"
+			maxVal "0.05"
+			resultVar "$randomGapSize"
+		}
+		Add
+		{
+			srcVar1 "$baseGapSize"
+			srcVar2 "$randomGapSize"
+			resultVar "$randomGapSize"
+		}
+		LessOrEqual
+		{
+			srcVar1 "$pipe1JustWrapped"
+			srcVar2 "$half"
+			resultVar "$pipe1GapSize"
+			greaterVar "$randomGapSize"
+			LessEqualVar "$pipe1GapSize"
+		}
+		// Randomize pipe1 horizontal wrap offset
+		UniformNoise
+		{
+			minVal "0.5"
+			maxVal "1.0"
+			resultVar "$randomWrapOffset"
+		}
+		Add
+		{
+			srcVar1 "$pipe2X"
+			srcVar2 "$randomWrapOffset"
+			resultVar "$wrapDestination"
+		}
+		LessOrEqual
+		{
+			srcVar1 "$pipe1JustWrapped"
+			srcVar2 "$half"
+			resultVar "$pipe1X"
+			greaterVar "$wrapDestination"
+			LessEqualVar "$pipe1X"
+		}
+
+		// Pipe2
+		Subtract
+		{
+			srcVar1 "$pipe2X"
+			srcVar2 "$pipeSpeed"
+			resultVar "$pipe2X"
+		}
+		// Check if pipe2 is at wrap point
+		LessOrEqual
+		{
+			srcVar1 "$pipe2X"
+			srcVar2 "$negWrapPoint"
+			resultVar "$pipe2IsWrapped"
+			LessEqualVar "$one"
+			greaterVar "$zero"
+		}
+		// Detect wrap edge for pipe2
+		Subtract
+		{
+			srcVar1 "$one"
+			srcVar2 "$pipe2WasWrapped"
+			resultVar "$notPipe2WasWrapped"
+		}
+		Multiply
+		{
+			srcVar1 "$pipe2IsWrapped"
+			srcVar2 "$notPipe2WasWrapped"
+			resultVar "$pipe2JustWrapped"
+		}
+		Multiply
+		{
+			srcVar1 "$pipe2IsWrapped"
+			srcVar2 "$one"
+			resultVar "$pipe2WasWrapped"
+		}
+		// Randomize pipe2 gap position each wrap
+		UniformNoise
+		{
+			minVal "0.3"
+			maxVal "0.7"
+			resultVar "$randomGap"
+		}
+		LessOrEqual
+		{
+			srcVar1 "$pipe2JustWrapped"
+			srcVar2 "$half"
+			resultVar "$pipe2GapY"
+			greaterVar "$randomGap"
+			LessEqualVar "$pipe2GapY"
+		}
+		// Randomize pipe2 gap size each wrap
+		UniformNoise
+		{
+			minVal "-0.05"
+			maxVal "0.05"
+			resultVar "$randomGapSize"
+		}
+		Add
+		{
+			srcVar1 "$baseGapSize"
+			srcVar2 "$randomGapSize"
+			resultVar "$randomGapSize"
+		}
+		LessOrEqual
+		{
+			srcVar1 "$pipe2JustWrapped"
+			srcVar2 "$half"
+			resultVar "$pipe2GapSize"
+			greaterVar "$randomGapSize"
+			LessEqualVar "$pipe2GapSize"
+		}
+		// Randomize pipe2 horizontal wrap offset
+		UniformNoise
+		{
+			minVal "0.5"
+			maxVal "1.0"
+			resultVar "$randomWrapOffset"
+		}
+		Add
+		{
+			srcVar1 "$pipe1X"
+			srcVar2 "$randomWrapOffset"
+			resultVar "$wrapDestination"
+		}
+		LessOrEqual
+		{
+			srcVar1 "$pipe2JustWrapped"
+			srcVar2 "$half"
+			resultVar "$pipe2X"
+			greaterVar "$wrapDestination"
+			LessEqualVar "$pipe2X"
+		}
+
+		// Collision stuff
+		// Bird bounding line (not a box :D, a horizontal line)
+		Subtract
+		{
+			srcVar1 "$birdX"
+			srcVar2 "$birdSize"
+			resultVar "$birdLeft"
+		}
+		Add
+		{
+			srcVar1 "$birdX"
+			srcVar2 "$birdSize"
+			resultVar "$birdRight"
+		}
+
+		// Pipe1 right edge
+		Add
+		{
+			srcVar1 "$pipe1X"
+			srcVar2 "$pipeWidth"
+			resultVar "$pipeRight"
+		}
+		// Collision with pipe1? (pipe1X < birdRight and pipeRight > birdLeft)
+		LessOrEqual
+		{
+			srcVar1 "$pipe1X"
+			srcVar2 "$birdRight"
+			resultVar "$inPipe1Col"
+			LessEqualVar "$one"
+			greaterVar "$zero"
+		}
+		LessOrEqual
+		{
+			srcVar1 "$pipeRight"
+			srcVar2 "$birdLeft"
+			resultVar "$inPipe1Col"
+			LessEqualVar "$zero"
+			greaterVar "$inPipe1Col"
+		}
+		// Pipe1 gap bounds
+		Add
+		{
+			srcVar1 "$pipe1GapY"
+			srcVar2 "$pipe1GapSize"
+			resultVar "$gapTop"
+		}
+		Subtract
+		{
+			srcVar1 "$pipe1GapY"
+			srcVar2 "$pipe1GapSize"
+			resultVar "$gapBottom"
+		}
+		// Check if bird is outside gap
+		LessOrEqual
+		{
+			srcVar1 "$birdY"
+			srcVar2 "$gapBottom"
+			resultVar "$belowGap"
+			LessEqualVar "$one"
+			greaterVar "$zero"
+		}
+		LessOrEqual
+		{
+			srcVar1 "$gapTop"
+			srcVar2 "$birdY"
+			resultVar "$aboveGap"
+			LessEqualVar "$one"
+			greaterVar "$zero"
+		}
+		// hitPipe1 = inPipe1Col and (aboveGap OR belowGap)
+		Add
+		{
+			srcVar1 "$aboveGap"
+			srcVar2 "$belowGap"
+			resultVar "$hitPipe1"
+		}
+		Multiply
+		{
+			srcVar1 "$hitPipe1"
+			srcVar2 "$inPipe1Col"
+			resultVar "$hitPipe1"
+		}
+
+		// Pipe2 right edge
+		Add
+		{
+			srcVar1 "$pipe2X"
+			srcVar2 "$pipeWidth"
+			resultVar "$pipeRight"
+		}
+		// Collision with pipe2?
+		LessOrEqual
+		{
+			srcVar1 "$pipe2X"
+			srcVar2 "$birdRight"
+			resultVar "$inPipe2Col"
+			LessEqualVar "$one"
+			greaterVar "$zero"
+		}
+		LessOrEqual
+		{
+			srcVar1 "$pipeRight"
+			srcVar2 "$birdLeft"
+			resultVar "$inPipe2Col"
+			LessEqualVar "$zero"
+			greaterVar "$inPipe2Col"
+		}
+		// Pipe2 gap bounds
+		Add
+		{
+			srcVar1 "$pipe2GapY"
+			srcVar2 "$pipe2GapSize"
+			resultVar "$gapTop"
+		}
+		Subtract
+		{
+			srcVar1 "$pipe2GapY"
+			srcVar2 "$pipe2GapSize"
+			resultVar "$gapBottom"
+		}
+		// Check if bird is outside gap
+		LessOrEqual
+		{
+			srcVar1 "$birdY"
+			srcVar2 "$gapBottom"
+			resultVar "$belowGap"
+			LessEqualVar "$one"
+			greaterVar "$zero"
+		}
+		LessOrEqual
+		{
+			srcVar1 "$gapTop"
+			srcVar2 "$birdY"
+			resultVar "$aboveGap"
+			LessEqualVar "$one"
+			greaterVar "$zero"
+		}
+		// hitPipe2 = inPipe2Col and (aboveGap or belowGap)
+		Add
+		{
+			srcVar1 "$aboveGap"
+			srcVar2 "$belowGap"
+			resultVar "$hitPipe2"
+		}
+		Multiply
+		{
+			srcVar1 "$hitPipe2"
+			srcVar2 "$inPipe2Col"
+			resultVar "$hitPipe2"
+		}
+
+		// gameOver if hit any pipe
+		Add
+		{
+			srcVar1 "$hitPipe1"
+			srcVar2 "$hitPipe2"
+			resultVar "$hitPipe1"
+		}
+		LessOrEqual
+		{
+			srcVar1 "$hitPipe1"
+			srcVar2 "$half"
+			resultVar "$gameOver"
+			greaterVar "$one"
+			LessEqualVar "$gameOver"
+		}
+
+		// Reset stuff
+		// Increment idle time when not flapping
+		Add
+		{
+			srcVar1 "$idleTime"
+			srcVar2 "$idleIncrement"
+			resultVar "$idleTime"
+		}
+		LessOrEqual
+		{
+			srcVar1 "$isFlapping"
+			srcVar2 "$half"
+			resultVar "$idleTime"
+			greaterVar "$zero"
+			LessEqualVar "$idleTime"
+		}
+		// Check if should reset
+		LessOrEqual
+		{
+			srcVar1 "$idleTime"
+			srcVar2 "$resetThreshold"
+			resultVar "$shouldReset"
+			greaterVar "$one"
+			LessEqualVar "$zero"
+		}
+		// Reset if shouldReset
+		LessOrEqual
+		{
+			srcVar1 "$shouldReset"
+			srcVar2 "$half"
+			resultVar "$gameOver"
+			greaterVar "$zero"
+			LessEqualVar "$gameOver"
+		}
+		LessOrEqual
+		{
+			srcVar1 "$shouldReset"
+			srcVar2 "$half"
+			resultVar "$birdY"
+			greaterVar "$half"
+			LessEqualVar "$birdY"
+		}
+		LessOrEqual
+		{
+			srcVar1 "$shouldReset"
+			srcVar2 "$half"
+			resultVar "$birdVel"
+			greaterVar "$zero"
+			LessEqualVar "$birdVel"
+		}
+		// Finally,
+		// Pass to shader
+		Equals { srcVar1 "$birdY" resultVar "$c0_x" }
+		Equals { srcVar1 "$pipe1X" resultVar "$c0_y" }
+		Equals { srcVar1 "$pipe1GapY" resultVar "$c0_z" }
+		Equals { srcVar1 "$pipe2X" resultVar "$c0_w" }
+		Equals { srcVar1 "$pipe2GapY" resultVar "$c1_x" }
+		Equals { srcVar1 "$gameOver" resultVar "$c1_y" }
+		Equals { srcVar1 "$pipe1GapSize" resultVar "$c1_z" }
+		Equals { srcVar1 "$pipe2GapSize" resultVar "$c1_w" }
+	}
+
+	"<dx90"
+	{
+		$no_draw 1
+	}
+}
